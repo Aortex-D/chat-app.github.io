@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Team Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            background: #f8f9fa;
+            padding: 15px 18px;
+            border-radius: 18px 18px 18px 5px;
+            max-width: 85%;
+            line-height: 1.5;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .chat-options {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-button {
+            background: white;
+            border: 2px solid #e9ecef;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 16px;
+            font-weight: 500;
+            color: #495057;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button:hover {
+            border-color: #4facfe;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .option-button:active {
+            transform: translateY(0);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #4facfe;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .back-button {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .chat-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+            
+            body {
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Support Team</h1>
+            <p>We're here to help you 24/7</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be added here dynamically -->
+        </div>
+        
+        <div class="chat-options" id="chatOptions">
+            <div class="options-container" id="optionsContainer">
+                <!-- Options will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const optionsContainer = document.getElementById('optionsContainer');
+        
+        // Chat data structure
+        const chatData = {
+            main: {
+                message: "Hey! How may I assist you today?",
+                options: [
+                    { id: 'payment', text: 'Payment Issue', type: 'submenu' },
+                    { id: 'bug', text: 'Report a Bug', type: 'response', response: 'Thank you for reporting a bug! Please describe the issue you\'re experiencing and we\'ll investigate it immediately. Our development team will get back to you within 24 hours.' },
+                    { id: 'contact', text: 'Contact Support', type: 'response', response: 'You can reach our support team through:\n\n📧 Email: support@company.com\n📞 Phone: +1 (555) 123-4567\n💬 Live Chat: Available 24/7\n\nOur average response time is under 2 hours!' },
+                    { id: 'account', text: 'Account Issues', type: 'submenu' }
+                ]
+            },
+            payment: {
+                message: "What payment issue can I help you with?",
+                options: [
+                    { id: 'deposit', text: 'Deposit Issue', type: 'response', response: 'I understand you\'re having trouble with a deposit. Here are the most common solutions:\n\n1. Check if your payment method is valid and has sufficient funds\n2. Verify your account is fully verified\n3. Clear your browser cache and try again\n\nIf the issue persists, please contact our payment specialists directly.' },
+                    { id: 'withdrawal', text: 'Withdrawal Issue', type: 'response', response: 'For withdrawal issues, please check:\n\n1. Your account has completed the verification process\n2. You\'ve met the minimum withdrawal amount\n3. Your withdrawal method matches your deposit method\n\nProcessing usually takes 1-3 business days. If it\'s been longer, we\'ll investigate immediately!' },
+                    { id: 'purchase', text: 'How to make a purchase', type: 'response', response: 'Making a purchase is easy! Follow these steps:\n\n1. Browse our products and select what you want\n2. Add items to your cart\n3. Proceed to checkout\n4. Choose your payment method\n5. Complete the secure payment\n\nWe accept all major credit cards, PayPal, and bank transfers. Need help with a specific step?' }
+                ]
+            },
+            account: {
+                message: "What account issue do you need help with?",
+                options: [
+                    { id: 'login', text: 'Login Problems', type: 'response', response: 'Having trouble logging in? Try these steps:\n\n1. Double-check your email and password\n2. Try resetting your password\n3. Clear your browser cookies\n4. Disable browser extensions temporarily\n\nIf you\'re still unable to access your account, we can help you recover it securely.' },
+                    { id: 'verification', text: 'Account Verification', type: 'response', response: 'Account verification typically takes 24-48 hours. You\'ll need:\n\n✓ Government-issued photo ID\n✓ Proof of address (utility bill or bank statement)\n✓ Clear, readable photos\n\nOnce submitted, our team will review and notify you via email. Premium members get priority verification!' },
+                    { id: 'settings', text: 'Profile Settings', type: 'response', response: 'You can update your profile settings by:\n\n1. Going to Account > Profile Settings\n2. Updating your personal information\n3. Changing notification preferences\n4. Managing privacy settings\n\nRemember to save changes before leaving the page. Some changes may require email verification.' }
+                ]
+            }
+        };
+
+        let currentMenu = 'main';
+        let messageHistory = [];
+
+        function addMessage(content, isBot = true) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            
+            if (isBot) {
+                messageDiv.innerHTML = `
+                    <div class="bot-avatar">🤖</div>
+                    <div class="message-content">${content}</div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            messageHistory.push({ content, isBot });
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="bot-avatar">🤖</div>
+                <div class="message-content">
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            return typingDiv;
+        }
+
+        function displayOptions(menuKey) {
+            const menu = chatData[menuKey];
+            optionsContainer.innerHTML = '';
+            
+            if (menuKey !== 'main') {
+                const backButton = document.createElement('button');
+                backButton.className = 'back-button';
+                backButton.textContent = '← Back to Main Menu';
+                backButton.onclick = () => {
+                    currentMenu = 'main';
+                    displayOptions('main');
+                };
+                optionsContainer.appendChild(backButton);
+            }
+            
+            menu.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option.text;
+                button.onclick = () => handleOptionClick(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleOptionClick(option) {
+            // Show user's selection first
+            addMessage(option.text, false);
+            
+            // Disable all buttons temporarily
+            const buttons = optionsContainer.querySelectorAll('.option-button');
+            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+            
+            // Small delay to ensure user message is visible
+            setTimeout(() => {
+                if (option.type === 'submenu') {
+                    const typingIndicator = showTypingIndicator();
+                    
+                    setTimeout(() => {
+                        typingIndicator.remove();
+                        addMessage(chatData[option.id].message);
+                        currentMenu = option.id;
+                        displayOptions(option.id);
+                        
+                        // Re-enable buttons
+                        setTimeout(() => {
+                            const newButtons = optionsContainer.querySelectorAll('.option-button');
+                            newButtons.forEach(btn => btn.style.pointerEvents = 'auto');
+                        }, 100);
+                    }, 1500);
+                } else {
+                    const typingIndicator = showTypingIndicator();
+                    
+                    setTimeout(() => {
+                        typingIndicator.remove();
+                        addMessage(option.response);
+                        
+                        // Re-enable buttons
+                        setTimeout(() => {
+                            buttons.forEach(btn => btn.style.pointerEvents = 'auto');
+                        }, 100);
+                    }, 2000);
+                }
+            }, 100);
+        }
+
+        // Initialize chat
+        function initChat() {
+            const typingIndicator = showTypingIndicator();
+            
+            setTimeout(() => {
+                typingIndicator.remove();
+                addMessage(chatData.main.message);
+                displayOptions('main');
+            }, 1500);
+        }
+
+        // Start the chat
+        initChat();
+    </script>
+</body>
+</html>
