@@ -232,7 +232,4 @@ body {
     padding: 0;
 }
 
-.options-container {
-    grid-template-columns: 1fr;
-}
 }
