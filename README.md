@@ -5,6 +5,12 @@ It simulates a support team conversation where users can choose from predefined 
 
 ---
 
+## 🙌 Credits
+This project was designed and developed entirely by **[Aortex-D](https://github.com/Aortex-D)**.  
+✨ Feel free to customize and extend the bot with real API integrations for more advanced functionality!
+
+---
+
 ## 🚀 Features
 - Clean and minimal UI  
 - Predefined responses (easy to edit)  
