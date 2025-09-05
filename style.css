@@ -191,10 +191,10 @@ border-top: 1px solid #e9ecef;
 .footer {
     background: #495057;
     width: 100%;
-    max-width: 500px;
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border-radius: 0;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+    margin-top: auto;
 }
 
 .footer-content {
@@ -280,11 +280,10 @@ border-radius: 3px;
 @media (max-width: 600px) {
     .chat-container {
         border-radius: 15px;
-        margin-bottom: 15px;
+        margin-bottom: 0;
     }
     
     .footer {
-        border-radius: 12px;
         padding: 15px;
     }
     
@@ -305,6 +304,6 @@ border-radius: 3px;
     }
 
     body {
-        padding: 10px;
+        padding: 0;
     }
 }
