@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -34,7 +34,7 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
             padding: 20px;
             text-align: center;
             color: white;
@@ -57,7 +57,6 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
         }
 
         .message {
@@ -65,13 +64,19 @@
             align-items: flex-start;
             gap: 10px;
             animation: fadeInUp 0.4s ease-out;
+            margin-bottom: 15px;
+        }
+
+        .message.user-message {
+            flex-direction: row-reverse;
+            justify-content: flex-start;
         }
 
         .bot-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -91,6 +96,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
+        .user-message .message-content {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            border-radius: 18px 18px 5px 18px;
+        }
+
         .chat-options {
             padding: 20px;
             background: #f8f9fa;
@@ -98,8 +109,8 @@
         }
 
         .options-container {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
@@ -114,20 +125,36 @@
             font-size: 16px;
             font-weight: 500;
             color: #495057;
-            position: relative;
-            overflow: hidden;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
         }
 
         .option-button:hover {
-            border-color: #4facfe;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: #6c757d;
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.3);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
         }
 
-        .option-button:active {
-            transform: translateY(0);
+        .back-button {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            grid-column: 1 / -1;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
         }
 
         .typing-indicator {
@@ -146,13 +173,23 @@
         .typing-dot {
             width: 8px;
             height: 8px;
-            background: #4facfe;
+            background: #6c757d;
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out;
         }
 
         .typing-dot:nth-child(1) { animation-delay: -0.32s; }
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        .chat-closed-message {
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #6c757d;
+            font-weight: 500;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
 
         @keyframes typing {
             0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
@@ -175,28 +212,6 @@
             to { opacity: 1; }
         }
 
-        .back-button {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
-        }
-
-        .back-button:hover {
-            background: #5a6268;
-            transform: translateY(-1px);
-        }
-
-        .hidden {
-            display: none;
-        }
-
         /* Scrollbar styling */
         .chat-messages::-webkit-scrollbar {
             width: 6px;
@@ -212,10 +227,6 @@
             border-radius: 3px;
         }
 
-        .chat-messages::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
         /* Mobile responsiveness */
         @media (max-width: 600px) {
             .chat-container {
@@ -226,6 +237,10 @@
             
             body {
                 padding: 0;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -251,6 +266,9 @@
     <script>
         const chatMessages = document.getElementById('chatMessages');
         const optionsContainer = document.getElementById('optionsContainer');
+        const chatOptions = document.getElementById('chatOptions');
+        
+        let isChatClosed = false;
         
         // Chat data structure
         const chatData = {
@@ -281,23 +299,24 @@
             }
         };
 
-        let currentMenu = 'main';
-        let messageHistory = [];
-
         function addMessage(content, isBot = true) {
             const messageDiv = document.createElement('div');
-            messageDiv.className = 'message';
             
             if (isBot) {
+                messageDiv.className = 'message';
                 messageDiv.innerHTML = `
                     <div class="bot-avatar">🤖</div>
+                    <div class="message-content">${content}</div>
+                `;
+            } else {
+                messageDiv.className = 'message user-message';
+                messageDiv.innerHTML = `
                     <div class="message-content">${content}</div>
                 `;
             }
             
             chatMessages.appendChild(messageDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-            messageHistory.push({ content, isBot });
         }
 
         function showTypingIndicator() {
@@ -316,22 +335,20 @@
             
             chatMessages.appendChild(typingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-            
             return typingDiv;
         }
 
-        function displayOptions(menuKey) {
-            const menu = chatData[menuKey];
-            optionsContainer.innerHTML = '';
+        function showOptions(menuKey, showBack = false) {
+            if (isChatClosed) return;
             
-            if (menuKey !== 'main') {
+            optionsContainer.innerHTML = '';
+            const menu = chatData[menuKey];
+            
+            if (showBack) {
                 const backButton = document.createElement('button');
                 backButton.className = 'back-button';
                 backButton.textContent = '← Back to Main Menu';
-                backButton.onclick = () => {
-                    currentMenu = 'main';
-                    displayOptions('main');
-                };
+                backButton.onclick = () => showOptions('main');
                 optionsContainer.appendChild(backButton);
             }
             
@@ -345,59 +362,102 @@
         }
 
         function handleOptionClick(option) {
-            // Show user's selection first
+            if (isChatClosed) return;
+            
+            // Show user selection
             addMessage(option.text, false);
             
-            // Disable all buttons temporarily
-            const buttons = optionsContainer.querySelectorAll('.option-button');
-            buttons.forEach(btn => btn.style.pointerEvents = 'none');
+            // Disable buttons temporarily
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
             
-            // Small delay to ensure user message is visible
             setTimeout(() => {
                 if (option.type === 'submenu') {
-                    const typingIndicator = showTypingIndicator();
-                    
+                    // Show submenu
+                    const typing = showTypingIndicator();
                     setTimeout(() => {
-                        typingIndicator.remove();
+                        typing.remove();
                         addMessage(chatData[option.id].message);
-                        currentMenu = option.id;
-                        displayOptions(option.id);
+                        showOptions(option.id, true);
                         
                         // Re-enable buttons
-                        setTimeout(() => {
-                            const newButtons = optionsContainer.querySelectorAll('.option-button');
-                            newButtons.forEach(btn => btn.style.pointerEvents = 'auto');
-                        }, 100);
+                        const newButtons = optionsContainer.querySelectorAll('button');
+                        newButtons.forEach(btn => btn.disabled = false);
                     }, 1500);
                 } else {
-                    const typingIndicator = showTypingIndicator();
-                    
+                    // Show response and then satisfaction survey
+                    const typing = showTypingIndicator();
                     setTimeout(() => {
-                        typingIndicator.remove();
+                        typing.remove();
                         addMessage(option.response);
-                        
-                        // Re-enable buttons
-                        setTimeout(() => {
-                            buttons.forEach(btn => btn.style.pointerEvents = 'auto');
-                        }, 100);
+                        showSatisfactionSurvey();
                     }, 2000);
                 }
-            }, 100);
+            }, 300);
+        }
+
+        function showSatisfactionSurvey() {
+            setTimeout(() => {
+                addMessage("Is your issue solved?");
+                
+                optionsContainer.innerHTML = '';
+                
+                const yesButton = document.createElement('button');
+                yesButton.className = 'option-button';
+                yesButton.textContent = 'Yes';
+                yesButton.onclick = () => handleSatisfactionResponse(true);
+                
+                const noButton = document.createElement('button');
+                noButton.className = 'option-button';
+                noButton.textContent = 'No';
+                noButton.onclick = () => handleSatisfactionResponse(false);
+                
+                optionsContainer.appendChild(yesButton);
+                optionsContainer.appendChild(noButton);
+            }, 1000);
+        }
+
+        function handleSatisfactionResponse(isSolved) {
+            // Show user selection
+            addMessage(isSolved ? 'Yes' : 'No', false);
+            
+            // Disable buttons
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            const typing = showTypingIndicator();
+            setTimeout(() => {
+                typing.remove();
+                
+                if (isSolved) {
+                    addMessage("Thank you for using our service! We're glad we could help resolve your issue. Have a great day! 😊");
+                } else {
+                    addMessage("We're sorry we couldn't fully resolve your issue. Please contact our support team at support@company.com for detailed guidance. Our specialists will assist you further.");
+                }
+                
+                closeChat();
+            }, 2000);
+        }
+
+        function closeChat() {
+            setTimeout(() => {
+                isChatClosed = true;
+                chatOptions.innerHTML = '<div class="chat-closed-message">Chat is closed</div>';
+            }, 2000);
         }
 
         // Initialize chat
-        function initChat() {
-            const typingIndicator = showTypingIndicator();
-            
+        function startChat() {
+            const typing = showTypingIndicator();
             setTimeout(() => {
-                typingIndicator.remove();
+                typing.remove();
                 addMessage(chatData.main.message);
-                displayOptions('main');
+                showOptions('main');
             }, 1500);
         }
 
-        // Start the chat
-        initChat();
+        // Start the application
+        startChat();
     </script>
 </body>
 </html>
