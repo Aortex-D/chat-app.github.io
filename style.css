@@ -12,7 +12,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px 0;
+    padding: 20px;
     margin: 0;
 }
 
@@ -26,7 +26,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    margin: 20px;
+    margin-bottom: 20px;
 }
 
 .chat-header {
@@ -190,14 +190,11 @@ border-top: 1px solid #e9ecef;
 /* Footer CSS */
 .footer {
     background: #495057;
-    width: 100vw; /* Full viewport width */
-    padding: 20px 0;
-    margin-top: auto;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 .footer-content {
@@ -205,9 +202,6 @@ border-top: 1px solid #e9ecef;
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
 }
 
 .copyright {
@@ -284,27 +278,33 @@ border-radius: 3px;
 
 /* Mobile responsiveness */
 @media (max-width: 600px) {
-.chat-container {
-    margin: 10px;
-    border-radius: 15px;
-}
+    .chat-container {
+        border-radius: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .footer {
+        border-radius: 12px;
+        padding: 15px;
+    }
+    
+    .footer-content {
+        gap: 12px;
+    }
+    
+    .copyright {
+        font-size: 13px;
+    }
+    
+    .social-links {
+        gap: 15px;
+    }
+    
+    .social-links a {
+        font-size: 22px;
+    }
 
-.footer-content {
-    gap: 12px;
-    padding: 0 15px;
-}
-
-.copyright {
-    font-size: 13px;
-}
-
-.social-links a {
-    font-size: 22px;
-    gap: 15px;
-}
-
-body {
-    padding: 0;
-}
-
+    body {
+        padding: 10px;
+    }
 }
