@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <title>Login ! XYZ</title>
+    <style>
+        * {
+            padding: 0.25rem;
+            font-family: "Poppins", sans-serif;
+        }
+        html {
+            background: linear-gradient(to right, #C47BE4, #7132CA);
+        }
+        h1 {
+            margin: auto;
+            text-align: center;
+        }
+        .form {
+            margin: auto;
+            padding: auto;
+
+        }
+        div input {
+            display: flex;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid black;
+        }
+        .int1 {
+            background-color: #F29AAE;
+        }
+        .int1:focus {
+            background-color: #FFBBE1;
+        }
+        .int2 {
+            background: linear-gradient(#EABDE6, #D69ADE);
+            padding: 10px;
+            margin: auto;
+            border-radius: 8px;
+            border: 1px solid black;
+        }
+        .int2:hover {
+            background: #b37eb8;
+        }
+        div p {
+            margin:auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>!XYZ</h1>
+    <div class="form">
+        <form action="/index.html">
+            <p>Enter your Full name<font color="#D91656">*</font></p>
+            <input class="int1" type="text" placeholder="Enter your full name" id="name" minlength="3" maxlength="25" required>
+            <p>Create a username<font color="#D91656">*</font></p>
+            <input class="int1" type="text" placeholder="Enter your username" id="username" minlength="3" maxlength="15" required>
+            <p>Enter your email address<font color="#D91656">*</font></p>
+            <input class="int1" type="email" placeholder="Enter your email" id="email" maxlength="28" required>
+            <p>Create a password<font color="#D91656">*</font></p>
+            <input class="int1" type="password" placeholder="Enter your password" id="password" minlength="6" maxlength="18" required>
+            <p>Re-enter a password<font color="#D91656">*</font></p>
+            <input class="int1" type="password" placeholder="Enter your password again" id="password" minlength="6" maxlength="18"  required><br>
+            <button class="int2" type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
